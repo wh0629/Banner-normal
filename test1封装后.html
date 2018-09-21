@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>轮播</title>
+    <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+    <style>
+        .banner{width: 600px;overflow: hidden;}
+        .imgs{display: flex;align-items: center;width: 3000px;transition: all 0.3s;}
+        .imgs img{vertical-align: top;}
+        .red{color: red;}
+    </style>
+</head>
+<body>
+<div class="banner">
+    <div class="imgs" style="transform: translate(-600px)">
+        <img src="img/1.jpg" alt="">
+        <img src="img/2.jpg" alt="">
+        <img src="img/3.jpg" alt="">
+        <img src="img/4.jpg" alt="">
+        <img src="img/5.jpg" alt="">
+    </div>
+</div>
+<div class="btns">
+    <span>第1张</span>
+    <span>第2张</span>
+    <span>第3张</span>
+    <span>第4张</span>
+    <span>第5张</span>
+</div>
+<p>css问题1：imgs不能排成一排 解决：给imgs一个固定的宽度</p>
+<p>js问题 spans[i] e.currentTarget为什么前面要加$符号 解决：只有jquery才有这些方法，要变成jquery对象才能调用</p>
+</body>
+<script>
+//点击播放
+    var spans = $('.btns > span ');
+    for(var i= 0;i<spans.length;i++){
+      $(spans[i]).on('click',function (e) {//spans[i] DOM对象
+        var index = $(e.currentTarget).index(); //当前排第几个 0,1,2，3,4,
+        var length = index * -600;
+        $('.imgs').css({transform:'translateX('+length+'px)'})
+        //点按钮的时候 n重置 并给当前添加red
+        n = index;
+        activeBtns(spans.eq(n));
+      })
+    }
+
+//自动播放
+    var n = 0;
+    //spans[n%5] //返回的是一个dom对象
+    //spans.eq(n%5)//jquery对象
+    var size = $('.imgs img').length;
+    slide(n%size);
+    var timer = setTimer();
+
+    //覆盖暂停 删除计时器
+    $('.banner').on('mouseenter',function () {
+        window.clearInterval(timer);
+    })
+
+    //移除继续 重新加个计时器 从之前那个开始(不初始化n)
+    $('.banner').on('mouseleave',function () {
+      timer = setTimer();
+    })
+
+    //封装计时器
+    function  setTimer() {
+      return setInterval(function () {
+        n += 1;
+        //console.log(n%3) //反复打印 1 2 0
+        slide(n%size);
+      },3000)
+    }
+
+    //封装 按钮添加颜色
+    function activeBtns($btns) {
+      $btns.addClass('red').siblings('.red').removeClass('red');
+    }
+
+    //封装 显示哪一张图片
+    function slide(index) {
+      spans.eq(index).trigger('click');//trigger
+    }
+
+</script>
+</html>
